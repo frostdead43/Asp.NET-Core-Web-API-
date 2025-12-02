@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "bLQfPeO8bQk=",
+  "success": true,
+  "projectFilePath": "D:\\DERSLER\\ASPNET CORE DERSLER\\1.Hafta\\test\\test.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\frost\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.0\\microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
+    "C:\\Users\\frost\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
