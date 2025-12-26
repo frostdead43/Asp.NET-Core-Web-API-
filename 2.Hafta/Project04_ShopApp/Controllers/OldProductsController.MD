@@ -17,14 +17,14 @@ namespace Project04_ShopApp.Controllers
     }
 
     [HttpGet]
-        public ActionResult <IEnumerable<Product>> GetAll()
+        public IActionResult GetAll()
         {
             var products = _productService.GetAll();
             return Ok(products); 
         }
 
          [HttpGet("low-stock")]
-        public ActionResult <IEnumerable<Product>> GetLowStockProducts([FromQuery] int threshold = 20)
+        public IActionResult GetLowStockProducts([FromQuery] int threshold = 20)
         {
             var products = _productService.GetLowStockProducts(threshold);
 
@@ -33,7 +33,7 @@ namespace Project04_ShopApp.Controllers
 
         [HttpGet("{id:int:min(1)}")]
 
-        public ActionResult<Product> GetById(int id)
+        public IActionResult GetById(int id)
         {
             var product = _productService.GetById(id);
             if (product == null)
@@ -45,7 +45,7 @@ namespace Project04_ShopApp.Controllers
         }
 
         [HttpGet("by-category/{category}")]
-        public ActionResult <IEnumerable<Product>> GetProductsByCategory(string category)
+        public IActionResult GetProductsByCategory(string category)
         {
             var products = _productService.GetProductsByCategory(category);
             if (products.Count == 0)
@@ -57,7 +57,7 @@ namespace Project04_ShopApp.Controllers
 
         [HttpPost] 
 
-        public ActionResult<Product> Create([FromBody] Product product)
+        public IActionResult Create([FromBody] Product product)
         {
             if(product == null)
             {
@@ -84,7 +84,7 @@ namespace Project04_ShopApp.Controllers
 
          [HttpPut("{id}")] 
 
-        public ActionResult<Product> Update(int id, [FromBody] Product product)
+        public IActionResult Update(int id, [FromBody] Product product)
         {
             if(product == null)
             {
@@ -117,7 +117,7 @@ namespace Project04_ShopApp.Controllers
 
         [HttpDelete("{id}")]
 
-        public ActionResult<Product> Delete(int id)
+        public IActionResult Delete(int id)
         {
             var isSuccess = _productService.Delete(id);
             if (!isSuccess)
