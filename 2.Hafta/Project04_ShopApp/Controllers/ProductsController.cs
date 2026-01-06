@@ -126,6 +126,46 @@ namespace Project04_ShopApp.Controllers
             }
             return Ok(isSuccess);    
         }
-    
+
+        [HttpPatch("{id}/stock")]
+
+        public ActionResult<Product> UpdateStock(int id, [FromBody] StockUpdateRequest stockUpdateRequest)
+        {
+            try
+            {
+                var product = _productService.UpdateStock(id,stockUpdateRequest.QuantityChange);
+                if(product == null)
+                {
+                    return NotFound();
+                }
+                return Ok();
+            }
+             catch (InvalidOperationException ex)
+            {
+             return BadRequest(new {message = $"Error: {ex.Message}"});
+            }
+        }
+
+         [HttpGet("{id}/stock-check")]
+        public ActionResult<object> CheckStock(int id, [FromQuery] int quantity)
+        {
+            var isAvaible = _productService.CheckStockAvaible(id, quantity);
+            var product = _productService.GetById(id);
+            if (product is null)
+            {
+                return NotFound(new { message = $"{id} id'li ürün bulunamadığı için stok kontrolü yapılamadı!" });
+            }
+            return Ok(
+                new {
+                    productId=id,
+                    productName=product.Name,
+                    currentStock=product.Stock,
+                    requestedQuantity = quantity,
+                    isAvaible = isAvaible,
+                    message = isAvaible ? "Sufficient stock" : "Insufficient Stock."
+                }
+            );
+        }
     }
+
 }

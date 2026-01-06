@@ -16,4 +16,8 @@ public interface IProductService
   List<Product> GetLowStockProducts(int thresold);
 
    List<Product> GetProductsByCategory(string category);
+
+   Product? UpdateStock(int id, int quantityChange);
+
+   bool CheckStockAvaible(int id, int requestedQuantity);
 }

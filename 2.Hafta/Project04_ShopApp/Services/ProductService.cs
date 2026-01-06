@@ -44,6 +44,16 @@ public class ProductService : IProductService
     return product;
   }
 
+  public bool CheckStockAvaible(int id, int requestedQuantity)
+  {
+     var product = _products.FirstOrDefault(p=>p.Id == id);
+    if(product == null)
+    {
+      return false;
+    }
+    return product.Stock >= requestedQuantity;
+  }
+
   public bool Delete(int id)
   {
     var product = _products.FirstOrDefault(p=>p.Id == id);
@@ -90,5 +100,21 @@ public class ProductService : IProductService
     existingProduct.Category = product.Category;
 
     return existingProduct;
+  }
+
+  public Product? UpdateStock(int id, int quantityChange)
+  {
+    var product = _products.FirstOrDefault(x => x.Id == id);
+    if(product == null)
+    {
+      return null;
+    }
+    var newStock = product.Stock + quantityChange;
+    if(newStock < 0 )
+    {
+      throw new InvalidOperationException($"insufficient stock. Current stock: {product.Stock}");
+    }
+      product.Stock = newStock;
+      return product;
   }
 }
