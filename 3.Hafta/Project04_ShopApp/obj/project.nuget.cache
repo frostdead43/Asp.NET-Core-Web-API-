@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "JIAXX2S2t0Y=",
+  "success": true,
+  "projectFilePath": "D:\\DERSLER\\ASPNET CORE DERSLER\\2.Hafta\\Project04_ShopApp\\Project04_ShopApp.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\frost\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.0\\microsoft.aspnetcore.openapi.10.0.0.nupkg.sha512",
+    "C:\\Users\\frost\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
