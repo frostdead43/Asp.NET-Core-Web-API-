@@ -5,19 +5,22 @@ namespace Project04_ShopApp.Services;
 
 public interface IProductService
 {
-  List<Product> GetAll();
-  Product? GetById(int id);
-  Product? Add(Product product);
+ Task<List<Product>> GetAllAsync();
 
-  Product? UpdateProduct(int id, Product product);
+Task<Product?> GetByIdAsync(int id);
 
-  bool Delete(int id);
+Task<Product?> AddAsync(Product product);
 
-  List<Product> GetLowStockProducts(int thresold);
+Task<Product?> UpdateProductAsync(int id, Product product);
 
-   List<Product> GetProductsByCategory(string category);
+Task<bool> DeleteAsync(int id);
 
-   Product? UpdateStock(int id, int quantityChange);
+Task<List<Product>> GetLowStockProductsAsync(int threshold);
 
-   bool CheckStockAvaible(int id, int requestedQuantity);
+Task<List<Product>> GetProductsByCategoryAsync(string category);
+
+Task<Product?> UpdateStockAsync(int id, int quantityChange);
+
+Task<bool> CheckStockAvailableAsync(int id, int requestedQuantity);
+
 }

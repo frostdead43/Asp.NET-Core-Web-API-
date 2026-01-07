@@ -18,6 +18,18 @@ public class AppDbContext: DbContext
   {
     
     base.OnModelCreating(modelBuilder);
+
+     modelBuilder.Entity<Product>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+            entity.Property(p => p.Name).IsRequired().HasMaxLength(100);
+            entity.Property(p => p.Price).IsRequired();
+            entity.Property(p => p.Stock).IsRequired();
+            entity.Property(p => p.Category).HasMaxLength(50);
+            entity.Property(p => p.Description).HasMaxLength(500);
+            entity.HasIndex(p => p.Name).IsUnique();
+        });
+
      List<Product> products = [
         // Kategori 1: Bilgisayar (3 adet)
         new Product { Id = 1, Name = "Laptop Pro", Description = "Yüksek performanslı laptop", Price = 1299.99m, Stock = 10, Category = "Bilgisayar" },
