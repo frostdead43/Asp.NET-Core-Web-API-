@@ -153,7 +153,7 @@ namespace Project04_ShopApp.Controllers
             var product = _productService.GetById(id);
             if (product is null)
             {
-                return NotFound(new { message = $"{id} id'li ürün bulunamadığı için stok kontrolü yapılamadı!" });
+                return NotFound(new { message = $"{id}The control process could not be completed because the product with the specified ID could not be found." });
             }
             return Ok(
                 new {
