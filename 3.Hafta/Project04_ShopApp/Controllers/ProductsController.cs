@@ -23,6 +23,17 @@ namespace Project04_ShopApp.Controllers
         return Ok(products);
     }
 
+    [HttpGet("paged")]
+
+    public async Task<ActionResult<IEnumerable<Product>>> GetPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+
+        {
+            var (product,totalCount) = await _productService.GetProductsPagedAsync(pageNumber, pageSize);
+            return Ok(product);
+        }
+
+
+
         [HttpGet("low-stock")]
     public async Task<ActionResult <IEnumerable<Product>>> GetLowStockProducts([FromQuery] int threshold = 20)
     {
@@ -55,96 +66,92 @@ namespace Project04_ShopApp.Controllers
         return Ok(products);
     }
 
-        // [HttpPost] 
+    [HttpPost] 
 
-        // public ActionResult<Product> Create([FromBody] Product product)
-        // {
-        //     if(product == null)
-        //     {
-        //         return BadRequest(new {message = "product information cannot be empty"});
-        //     }
-        //     if(string.IsNullOrWhiteSpace(product.Name))
-        //     {
-        //         return BadRequest(new {message = "product name is required"});
-        //     }
-        //     if(product.Price <=0)
-        //     {
-        //         return BadRequest(new {message = "The product price must be greater than 0"});
-        //     }
-        //     if(product.Stock <0)
-        //     {
-        //         return BadRequest(new {message = "stock quantity cannot be negative"});
-        //     }
+    public async Task<ActionResult<Product>> Create([FromBody] Product product)
+    {
 
-        //     var newProduct = _productService.Add(product);
+        try
+        {
+            var newProduct = await _productService.AddAsync(product);
+            return CreatedAtAction(nameof(GetById), new {id=newProduct?.Id}, newProduct);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new {error = ex.Message});
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new {error = ex.Message});
+        }
+        
+        
+    }
 
-        //     return CreatedAtAction(nameof(GetById), new {id=newProduct?.Id}, newProduct);
-            
-        // }
+         [HttpPut("{id}")] 
 
-        //  [HttpPut("{id}")] 
+        public async Task<ActionResult<Product>> Update(int id, [FromBody] Product product)
+        {
 
-        // public ActionResult<Product> Update(int id, [FromBody] Product product)
-        // {
-        //     if(product == null)
-        //     {
-        //         return BadRequest(new {message = "product information cannot be empty"});
-        //     }
-        //     if(id != product.Id)
-        //     {
-        //         return BadRequest(new {message = "The ID value in the URL does not match the ID value in the body!"});
-        //     }
-        //     if(string.IsNullOrWhiteSpace(product.Name))
-        //     {
-        //         return BadRequest(new {message = "product name is required"});
-        //     }
-        //     if(product.Price <=0)
-        //     {
-        //         return BadRequest(new {message = "The product price must be greater than 0"});
-        //     }
-        //     if(product.Stock <0)
-        //     {
-        //         return BadRequest(new {message = "stock quantity cannot be negative"});
-        //     }
-        //     var updatedProduct = _productService.UpdateProduct(id, product);
 
-        //     if (updatedProduct == null)
-        //     {
-        //         return NotFound(new {message = $"{id}The update process could not be completed because the product with the specified ID could not be found."});
-        //     }
-        //     return Ok(updatedProduct);
-        // }
+        if (string.IsNullOrWhiteSpace(product.Name))
 
-        // [HttpDelete("{id}")]
+        {
+            throw new ArgumentException("product name is required", nameof(product));
+        }
 
-        // public ActionResult<Product> Delete(int id)
-        // {
-        //     var isSuccess = _productService.Delete(id);
-        //     if (!isSuccess)
-        //     {
-        //         return NotFound(new {message = "Deleted"});
-        //     }
-        //     return Ok(isSuccess);    
-        // }
+        try
+        {
+            var updatedProduct = await _productService.UpdateProductAsync(id, product!);
+            if (updatedProduct == null)
+            {
+                return NotFound(new {message = $"{id}The update process could not be completed because the product with the specified ID could not be found."});
+            }
+            return Ok(updatedProduct);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new {error = ex.Message});
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new {error = ex.Message});
+        }
+        
+          
+          
+        }
 
-        // [HttpPatch("{id}/stock")]
+    [HttpDelete("{id}")]
 
-        // public ActionResult<Product> UpdateStock(int id, [FromBody] StockUpdateRequest stockUpdateRequest)
-        // {
-        //     try
-        //     {
-        //         var product = _productService.UpdateStock(id,stockUpdateRequest.QuantityChange);
-        //         if(product == null)
-        //         {
-        //             return NotFound();
-        //         }
-        //         return Ok();
-        //     }
-        //      catch (InvalidOperationException ex)
-        //     {
-        //      return BadRequest(new {message = $"Error: {ex.Message}"});
-        //     }
-        // }
+    public async Task<ActionResult<Product>> Delete(int id)
+        {
+            var isSuccess = await _productService.DeleteAsync (id);
+            if (!isSuccess)
+            {
+                return NotFound(new {message = "Deleted"});
+            }
+            return Ok(isSuccess);    
+        }
+
+        [HttpPatch("{id}/stock")]
+
+        public async Task<ActionResult<Product>> UpdateStock(int id, [FromBody] StockUpdateRequest stockUpdateRequest)
+        {
+            try
+            {
+                var product = await _productService.UpdateStockAsync(id,stockUpdateRequest.QuantityChange);
+                if(product == null)
+                {
+                    return NotFound();
+                }
+                return Ok();
+            }
+             catch (InvalidOperationException ex)
+            {
+             return BadRequest(new {message = $"Error: {ex.Message}"});
+            }
+        }
 
          [HttpGet("{id}/stock-check")]
         public async Task<ActionResult<object>> CheckStock(int id, [FromQuery] int quantity)

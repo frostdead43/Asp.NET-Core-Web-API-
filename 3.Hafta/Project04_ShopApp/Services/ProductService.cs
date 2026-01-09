@@ -18,6 +18,17 @@ public class ProductService : IProductService
 
   public async Task<Product?> AddAsync(Product product)
   {
+
+    if(product == null)
+    {
+      throw new ArgumentException("product information cannot be empty", nameof(product));
+    }
+
+    if(string.IsNullOrWhiteSpace(product.Name))
+    {
+      throw new ArgumentException("product name is required", nameof(product));
+    }
+
     if(product.Stock < 0)
     {
       throw new ArgumentException("Stock cannot be negative!",nameof(product));
@@ -89,8 +100,20 @@ public class ProductService : IProductService
     return products;
   }
 
+  public async Task<(List<Product> Products, int TotalCount)> GetProductsPagedAsync(int pageNumber=2, int pageSize=10)
+  {
+    var totalCount = await _context.Products.CountAsync();
+    var products = await _context.Products.OrderBy(X=>X.Name).Skip(pageSize*(pageNumber-1)).Take(pageSize).ToListAsync();
+    return (products, totalCount);
+  }
+
   public async Task<Product?> UpdateProductAsync(int id, Product product)
   {
+    if(product == null)
+    {
+      throw new ArgumentException("product information cannot be empty", nameof(product));
+    }
+
     if(id!=product.Id)
     {
       return null;
@@ -110,12 +133,6 @@ public class ProductService : IProductService
       throw new ArgumentException("Price cannot be negative!",nameof(product));
     }
 
-    var exists = await _context.Products.AnyAsync(x=>x.Name == product.Name);
-
-    if(exists)
-    {
-      throw new InvalidOperationException($"'{product.Name}' already exist!");
-    }
     existingProduct.Name = product.Name;
     existingProduct.Price = product.Price;
     existingProduct.Stock = product.Stock;
@@ -131,7 +148,7 @@ public class ProductService : IProductService
     var product = await _context.Products.FindAsync(id);
     if(product == null)
     {
-      return null;
+      throw new ArgumentNullException(nameof(product), "Product cannot find ");
     }
     var newStock = product.Stock + quantityChange;
     if(newStock<0)

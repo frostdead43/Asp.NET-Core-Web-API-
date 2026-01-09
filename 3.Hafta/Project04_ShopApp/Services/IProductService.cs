@@ -23,4 +23,6 @@ Task<Product?> UpdateStockAsync(int id, int quantityChange);
 
 Task<bool> CheckStockAvailableAsync(int id, int requestedQuantity);
 
+ Task<(List<Product> Products, int TotalCount)> GetProductsPagedAsync(int pageNumber, int pageSize);
+
 }
