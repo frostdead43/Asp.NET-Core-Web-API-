@@ -16,9 +16,28 @@ public class ProductService : IProductService
     _context = context;
   }
 
-  public Task<Product?> AddAsync(Product product)
+  public async Task<Product?> AddAsync(Product product)
   {
-    throw new NotImplementedException();
+    if(product.Stock < 0)
+    {
+      throw new ArgumentException("Stock cannot be negative!",nameof(product));
+    }
+
+    if(product.Price < 0)
+    {
+      throw new ArgumentException("Price cannot be negative!",nameof(product));
+    }
+
+    var exists = await _context.Products.AnyAsync(x=>x.Name == product.Name);
+
+    if(exists)
+    {
+      throw new InvalidOperationException($"'{product.Name}' already exist!");
+    }
+
+    await _context.Products.AddAsync(product);
+    await _context.SaveChangesAsync();
+    return product;
   }
 
   public async Task<bool> CheckStockAvailableAsync(int id, int requestedQuantity)
@@ -31,14 +50,23 @@ public class ProductService : IProductService
     return product.Stock >= requestedQuantity;
   }
 
-  public Task<bool> DeleteAsync(int id)
+  public async Task<bool> DeleteAsync(int id)
   {
-    throw new NotImplementedException();
+    var product = await _context.Products.FindAsync(id);
+    if(product == null)
+    {
+      return false;
+    }
+
+    _context.Products.Remove(product);
+    await _context.SaveChangesAsync();
+    return true;
+  
   }
 
   public async Task<List<Product>> GetAllAsync()
   {
-    var products = await _context.Products.ToListAsync();
+    var products = await _context.Products.OrderBy(x=>x.Name).ToListAsync();
     return products;
   }
 
@@ -61,13 +89,59 @@ public class ProductService : IProductService
     return products;
   }
 
-  public Task<Product?> UpdateProductAsync(int id, Product product)
+  public async Task<Product?> UpdateProductAsync(int id, Product product)
   {
-    throw new NotImplementedException();
+    if(id!=product.Id)
+    {
+      return null;
+    }
+    var existingProduct = await _context.Products.FindAsync(id);
+    if(existingProduct == null)
+    {
+      return null;
+    }
+     if(product.Stock < 0)
+    {
+      throw new ArgumentException("Stock cannot be negative!",nameof(product));
+    }
+
+    if(product.Price < 0)
+    {
+      throw new ArgumentException("Price cannot be negative!",nameof(product));
+    }
+
+    var exists = await _context.Products.AnyAsync(x=>x.Name == product.Name);
+
+    if(exists)
+    {
+      throw new InvalidOperationException($"'{product.Name}' already exist!");
+    }
+    existingProduct.Name = product.Name;
+    existingProduct.Price = product.Price;
+    existingProduct.Stock = product.Stock;
+    existingProduct.Category = product.Category;
+    existingProduct.Description = product.Description;
+    
+    await _context.SaveChangesAsync();
+    return existingProduct;
   }
 
-  public Task<Product?> UpdateStockAsync(int id, int quantityChange)
+  public async Task<Product?> UpdateStockAsync(int id, int quantityChange)
   {
-    throw new NotImplementedException();
+    var product = await _context.Products.FindAsync(id);
+    if(product == null)
+    {
+      return null;
+    }
+    var newStock = product.Stock + quantityChange;
+    if(newStock<0)
+    {
+      throw new InvalidOperationException($"Insufficient Stock! Current stock is:{product.Stock}, Requested change is:{quantityChange}");
+    }
+    product.Stock = newStock;
+    await _context.SaveChangesAsync();
+
+    return product;
+
   }
 }
