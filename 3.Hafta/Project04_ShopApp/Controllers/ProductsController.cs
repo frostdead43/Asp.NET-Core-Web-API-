@@ -16,6 +16,7 @@ namespace Project04_ShopApp.Controllers
       _productService = productService;
     }
 
+    // GET: api/products
     [HttpGet]
   public async Task<ActionResult<IEnumerable<Product>>> GetAll()
     {
@@ -23,8 +24,8 @@ namespace Project04_ShopApp.Controllers
         return Ok(products);
     }
 
+    // GET: api/products/paged?pageNumber=1&pageSize=10
     [HttpGet("paged")]
-
     public async Task<ActionResult<IEnumerable<Product>>> GetPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
 
         {
@@ -33,8 +34,8 @@ namespace Project04_ShopApp.Controllers
         }
 
 
-
-        [HttpGet("low-stock")]
+    // GET: api/products/low-stock?threshold=10
+    [HttpGet("low-stock")]
     public async Task<ActionResult <IEnumerable<Product>>> GetLowStockProducts([FromQuery] int threshold = 20)
     {
         var products = await _productService.GetLowStockProductsAsync(threshold);
@@ -42,8 +43,9 @@ namespace Project04_ShopApp.Controllers
         return Ok(products);
     }
 
-    [HttpGet("{id}")]
 
+    // GET: api/products/5
+    [HttpGet("{id}")]
     public  async Task<ActionResult<Product>> GetById([FromRoute] int id)
     {
         var product = await _productService.GetByIdAsync(id);
@@ -55,6 +57,7 @@ namespace Project04_ShopApp.Controllers
         
     }
 
+     // GET: api/products/by-category/phone
     [HttpGet("by-category/{category}")]
     public async Task<ActionResult <IEnumerable<Product>>> GetProductsByCategory(string category)
     {
@@ -66,8 +69,8 @@ namespace Project04_ShopApp.Controllers
         return Ok(products);
     }
 
+    // POST: api/products
     [HttpPost] 
-
     public async Task<ActionResult<Product>> Create([FromBody] Product product)
     {
 
@@ -85,43 +88,37 @@ namespace Project04_ShopApp.Controllers
             return Conflict(new {error = ex.Message});
         }
         
-        
     }
-
+        // PUT: api/products/4
          [HttpPut("{id}")] 
-
         public async Task<ActionResult<Product>> Update(int id, [FromBody] Product product)
         {
 
-
-        if (string.IsNullOrWhiteSpace(product.Name))
-
-        {
-            throw new ArgumentException("product name is required", nameof(product));
-        }
-
-        try
-        {
-            var updatedProduct = await _productService.UpdateProductAsync(id, product!);
-            if (updatedProduct == null)
+            if (string.IsNullOrWhiteSpace(product.Name))
             {
-                return NotFound(new {message = $"{id}The update process could not be completed because the product with the specified ID could not be found."});
+                throw new ArgumentException("product name is required", nameof(product));
             }
-            return Ok(updatedProduct);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new {error = ex.Message});
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(new {error = ex.Message});
-        }
-        
-          
-          
+
+            try
+            {
+                var updatedProduct = await _productService.UpdateProductAsync(id, product!);
+                if (updatedProduct == null)
+                {
+                    return NotFound(new {message = $"{id}The update process could not be completed because the product with the specified ID could not be found."});
+                }
+                return Ok(updatedProduct);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new {error = ex.Message});
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new {error = ex.Message});
+            }      
         }
 
+     // DELETE: api/products/5
     [HttpDelete("{id}")]
 
     public async Task<ActionResult<Product>> Delete(int id)
@@ -134,8 +131,8 @@ namespace Project04_ShopApp.Controllers
             return Ok(isSuccess);    
         }
 
+         // UPDATE: api/products/4/stock
         [HttpPatch("{id}/stock")]
-
         public async Task<ActionResult<Product>> UpdateStock(int id, [FromBody] StockUpdateRequest stockUpdateRequest)
         {
             try
@@ -153,6 +150,7 @@ namespace Project04_ShopApp.Controllers
             }
         }
 
+         // GET: api/products/3/stock-check?quantity=10
          [HttpGet("{id}/stock-check")]
         public async Task<ActionResult<object>> CheckStock(int id, [FromQuery] int quantity)
         {
