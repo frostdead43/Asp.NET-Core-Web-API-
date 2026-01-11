@@ -12,7 +12,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(x =>
 {
-    x.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
+    x.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSqlConnection"));
 });
 builder.Services.AddScoped<IProductService,ProductService>(); 
 
