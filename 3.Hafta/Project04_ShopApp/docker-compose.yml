@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:16-alpine
@@ -9,9 +7,24 @@ services:
       POSTGRES_PASSWORD: mako_pass
       POSTGRES_DB: makif_shopapp
     ports:
-        - "5070:5432"
+      - "5070:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: makif_shopapp_container
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__PostgreSqlConnection: Host=postgres;Port=5432;Database=makif_shopapp;Username=Makif;Password=mako_pass;Trust Server Certificate=true
+    depends_on:
+      - postgres
+    restart: unless-stopped
 
 volumes:
   postgres_data:
